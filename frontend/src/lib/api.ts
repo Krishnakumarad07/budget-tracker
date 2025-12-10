@@ -55,7 +55,13 @@ class ApiClient {
   async post<T>(endpoint: string, data?: unknown): Promise<T> {
     // Call CSRF cookie endpoint for stateful requests
     if (["/register", "/login", "/logout"].includes(endpoint)) {
-      await fetch("http://127.0.0.1:8000/sanctum/csrf-cookie", {
+      // Derive CSRF URL from API_URL (remove `/api` if present)
+      const rootApiUrl = API_URL.endsWith("/api")
+        ? API_URL.slice(0, -4)
+        : API_URL;
+
+      await fetch(`${rootApiUrl}/sanctum/csrf-cookie`, {
+        method: "GET",
         credentials: "include",
       });
     }
