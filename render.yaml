@@ -4,7 +4,7 @@ services:
   - type: web
     name: budget-tracker-api
     runtime: php
-    region: oregon      # PHP runtime only supports these regions: oregon, frankfurt, singapore
+    region: singapore      # PHP runtime only supports these regions: oregon, frankfurt, singapore
     env: production
     buildCommand: "composer install --no-dev --optimize-autoloader"
     startCommand: "php artisan serve --host=0.0.0.0 --port=$PORT"
