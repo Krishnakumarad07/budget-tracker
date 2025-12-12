@@ -13,7 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->prepend(HandleCors::class); // ✅ Use native middleware
+        $middleware->prepend(HandleCors::class);
+        $middleware->alias([
+            'auth.token' => \App\Http\Middleware\AuthenticateWithToken::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

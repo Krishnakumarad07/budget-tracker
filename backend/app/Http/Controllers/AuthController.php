@@ -1,7 +1,8 @@
 <?php
 
+namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
@@ -24,8 +25,7 @@ class AuthController extends Controller
             'currency' => $request->currency ?? 'INR',
         ]);
 
-        // Create a Sanctum token for this user
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $token = $user->generateToken();
 
         return response()->json([
             'message' => 'User registered',
@@ -43,17 +43,13 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
 
-        // Revoke old tokens (optional, for security)
-        $user->tokens()->delete();
-
-        // Create new token
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $token = $user->generateToken();
 
         return response()->json([
             'message' => 'Logged in',
@@ -64,8 +60,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        // Delete the current token only
-        $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
+        $user->api_token = null;
+        $user->save();
 
         return response()->json(['message' => 'Logged out']);
     }
