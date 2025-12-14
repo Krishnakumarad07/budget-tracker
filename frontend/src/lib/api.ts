@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api";
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://budget-tracker-api-yaqk.onrender.com/api";
 
 class ApiClient {
   private baseURL: string;
@@ -21,7 +23,6 @@ class ApiClient {
     return headers;
   }
 
-  // Ensure cookies are included for CSRF
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
@@ -30,12 +31,12 @@ class ApiClient {
       ? `${this.baseURL}${endpoint}`
       : `${this.baseURL}/${endpoint}`;
 
-    const headers = this.getHeaders();
-
     const response = await fetch(url, {
       ...options,
-      headers: { ...headers, ...options.headers },
-      credentials: "include", // important for Sanctum CSRF
+      headers: {
+        ...this.getHeaders(),
+        ...options.headers,
+      },
     });
 
     if (!response.ok) {
@@ -48,25 +49,25 @@ class ApiClient {
     return response.json();
   }
 
-  async get<T>(endpoint: string): Promise<T> {
+  get<T>(endpoint: string): Promise<T> {
     return this.request<T>(endpoint, { method: "GET" });
   }
 
-  async post<T>(endpoint: string, data?: unknown): Promise<T> {
+  post<T>(endpoint: string, data?: unknown): Promise<T> {
     return this.request<T>(endpoint, {
       method: "POST",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
-  async put<T>(endpoint: string, data?: unknown): Promise<T> {
+  put<T>(endpoint: string, data?: unknown): Promise<T> {
     return this.request<T>(endpoint, {
       method: "PUT",
-      body: data ? JSON.stringify(data) : undefined,
+      body: JSON.stringify(data),
     });
   }
 
-  async delete<T>(endpoint: string): Promise<T> {
+  delete<T>(endpoint: string): Promise<T> {
     return this.request<T>(endpoint, { method: "DELETE" });
   }
 }
