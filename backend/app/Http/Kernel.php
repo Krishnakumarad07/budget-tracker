@@ -10,9 +10,8 @@ class Kernel extends HttpKernel
 {
     protected $middlewareGroups = [
         'api' => [
-            // EnsureFrontendRequestsAreStateful::class, // Required for SPA auth
-            'throttle:api',
-            SubstituteBindings::class,
+             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        \Illuminate\Http\Middleware\HandleCors::class,
         ],
     ];
 }
