@@ -4,18 +4,22 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
-// routes/api.php
-use Illuminate\Http\Request;
 
-// Handle preflight OPTIONS requests for all API routes
-Route::options('/{any}', function () {
-    return response()->noContent();
-})->where('any', '.*');
-
+/*
+|--------------------------------------------------------------------------
+| Public routes (NO AUTH)
+|--------------------------------------------------------------------------
+*/
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware(['auth.token'])->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Protected routes (Bearer Token)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth:api')->group(function () {
+
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
